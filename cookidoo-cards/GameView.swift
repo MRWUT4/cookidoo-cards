@@ -76,28 +76,20 @@ struct GameView: View {
     @State private var phase: GamePhase = .chooseStat
     @State private var selectedStat: GameStat? = nil
     @State private var roundResult: RoundResult? = nil
-    @State private var gameStarted = false
-
     var body: some View {
         Group {
             if savedRecipes.count < 2 {
                 ContentUnavailableView("Not Enough Cards", systemImage: "rectangle.on.rectangle.angled", description: Text("You need at least 2 saved recipes to play."))
-            } else if !gameStarted {
-                ContentUnavailableView {
-                    Label("Top Trumps", systemImage: "gamecontroller")
-                } description: {
-                    Text("Compare recipe stats and win your opponent's cards!")
-                } actions: {
-                    Button("Start Game") {
-                        startGame()
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
             } else {
                 gameContent
             }
         }
         .navigationTitle("Game")
+        .onAppear {
+            if playerDeck.isEmpty && savedRecipes.count >= 2 {
+                startGame()
+            }
+        }
     }
 
     @ViewBuilder
@@ -219,7 +211,7 @@ struct GameView: View {
     private func compactCardView(for recipe: SavedRecipe) -> some View {
         RecipeCardView(
             title: recipe.title,
-            imageURL: resolvedImageURL(recipe),
+            imageURL: recipe.resolvedImageURL,
             rating: nil,
             numberOfRatings: nil,
             totalTime: nil,
@@ -233,7 +225,7 @@ struct GameView: View {
     private func cardView(for recipe: SavedRecipe) -> some View {
         RecipeCardView(
             title: recipe.title,
-            imageURL: resolvedImageURL(recipe),
+            imageURL: recipe.resolvedImageURL,
             rating: recipe.rating,
             numberOfRatings: recipe.numberOfRatings,
             totalTime: recipe.totalTime,
@@ -267,7 +259,6 @@ struct GameView: View {
         phase = .chooseStat
         selectedStat = nil
         roundResult = nil
-        gameStarted = true
     }
 
     private func playStat(_ stat: GameStat) {
@@ -321,11 +312,6 @@ struct GameView: View {
         }
     }
 
-    private func resolvedImageURL(_ recipe: SavedRecipe) -> URL? {
-        guard let raw = recipe.imageURL else { return nil }
-        let resolved = raw.replacingOccurrences(of: "{transformation}", with: "t_web750x500")
-        return URL(string: resolved)
-    }
 }
 
 #Preview {

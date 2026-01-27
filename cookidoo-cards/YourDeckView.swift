@@ -20,11 +20,13 @@ struct YourDeckView: View {
                     ContentUnavailableView("No Saved Recipes", systemImage: "rectangle.on.rectangle.angled", description: Text("Tap + to search and add recipes."))
                 } else {
                     ScrollView {
+                        
+                        
                         LazyVStack(spacing: 16) {
                             ForEach(savedRecipes) { saved in
                                 RecipeCardView(
                                     title: saved.title,
-                                    imageURL: savedImageURL(saved),
+                                    imageURL: saved.resolvedImageURL,
                                     rating: saved.rating,
                                     numberOfRatings: saved.numberOfRatings,
                                     totalTime: saved.totalTime,
@@ -75,11 +77,6 @@ struct YourDeckView: View {
                 RecipeListView()
             }
         }
-    }
-    private func savedImageURL(_ saved: SavedRecipe) -> URL? {
-        guard let raw = saved.imageURL else { return nil }
-        let resolved = raw.replacingOccurrences(of: "{transformation}", with: "t_web750x500")
-        return URL(string: resolved)
     }
 }
 

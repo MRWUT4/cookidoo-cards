@@ -53,6 +53,12 @@ final class SavedRecipe {
     var protein: String?
     var savedAt: Date
 
+    var resolvedImageURL: URL? {
+        guard let raw = imageURL else { return nil }
+        let resolved = raw.replacingOccurrences(of: "{transformation}", with: "t_mob400x333%402x")
+        return URL(string: resolved)
+    }
+
     init(recipe: Recipe, nutrition: NutritionInfo? = nil) {
         self.recipeId = recipe.id
         self.title = recipe.title
