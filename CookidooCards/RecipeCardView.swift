@@ -30,6 +30,7 @@ struct RecipeCardView: View {
     let protein: String?
 
     var highlightedStat: String? = nil
+    var redactStats: Bool = false
 
     @Environment(\.onStatTapped) private var onStatTapped
 
@@ -87,6 +88,7 @@ struct RecipeCardView: View {
                     }
                 }
                 .padding(.vertical, 4)
+                .redacted(reason: redactStats ? .placeholder : [])
             }
         }
 //        .aspectRatio(2, contentMode: .fit)

@@ -95,47 +95,28 @@ struct GameView: View {
     @ViewBuilder
     private var gameContent: some View {
         switch phase {
-        case .chooseStat:
-            chooseStatView
-        case .reveal:
-            revealView
+        case .chooseStat, .reveal:
+            roundView
         case .gameOver:
             gameOverView
         }
     }
 
-    // MARK: - Choose Stat Phase
+    // MARK: - Round View
 
-    private var chooseStatView: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                headerCounts
+    private var isRevealed: Bool { phase == .reveal }
 
-                Text("Your turn — tap a stat!")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-
-                if let computerCard = computerDeck.first {
-                    compactCardView(for: computerCard)
-                }
-
-                if let card = playerDeck.first {
-                    playerCard(card, interactive: true)
-                }
-            }
-            .padding()
-        }
-    }
-
-    // MARK: - Reveal Phase
-
-    private var revealView: some View {
+    private var roundView: some View {
         ScrollView {
             VStack(spacing: 16) {
                 headerCounts
 
                 if let result = roundResult, let stat = selectedStat {
                     resultBanner(result: result, stat: stat)
+                } else {
+                    Text("Your turn — tap a stat!")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -144,7 +125,7 @@ struct GameView: View {
                             Text("Computer")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            cardView(for: card)
+                            cardView(for: card, redacted: !isRevealed)
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -153,17 +134,19 @@ struct GameView: View {
                             Text("You")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            playerCard(card, interactive: false)
+                            playerCard(card, interactive: !isRevealed)
                         }
                         .frame(maxWidth: .infinity)
                     }
                 }
 
-                Button("Next Round") {
-                    nextRound()
+                if isRevealed {
+                    Button("Next Round") {
+                        nextRound()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .padding(.top, 8)
                 }
-                .buttonStyle(.borderedProminent)
-                .padding(.top, 8)
             }
             .padding()
         }
@@ -208,21 +191,7 @@ struct GameView: View {
             } : nil)
     }
 
-    private func compactCardView(for recipe: SavedRecipe) -> some View {
-        RecipeCardView(
-            title: recipe.title,
-            imageURL: recipe.resolvedImageURL,
-            rating: nil,
-            numberOfRatings: nil,
-            totalTime: nil,
-            calories: nil,
-            carbs: nil,
-            fat: nil,
-            protein: nil
-        )
-    }
-
-    private func cardView(for recipe: SavedRecipe) -> some View {
+    private func cardView(for recipe: SavedRecipe, redacted: Bool = false) -> some View {
         RecipeCardView(
             title: recipe.title,
             imageURL: recipe.resolvedImageURL,
@@ -233,7 +202,8 @@ struct GameView: View {
             carbs: recipe.carbs,
             fat: recipe.fat,
             protein: recipe.protein,
-            highlightedStat: selectedStat?.rawValue
+            highlightedStat: selectedStat?.rawValue,
+            redactStats: redacted
         )
     }
 
