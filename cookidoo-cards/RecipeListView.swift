@@ -29,8 +29,23 @@ struct RecipeListView: View {
                 } else if searchService.recipes.isEmpty {
                     ContentUnavailableView("No Recipes", systemImage: "magnifyingglass", description: Text("Search for recipes to get started."))
                 } else {
-                    List(searchService.recipes) { recipe in
-                        RecipeRow(recipe: recipe, nutrition: detailService.nutritionByRecipeId[recipe.id])
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            ForEach(searchService.recipes) { recipe in
+                                RecipeCardView(
+                                    title: recipe.title,
+                                    imageURL: recipeImageURL(recipe),
+                                    rating: recipe.rating,
+                                    numberOfRatings: recipe.numberOfRatings,
+                                    totalTime: recipe.totalTime,
+                                    calories: detailService.nutritionByRecipeId[recipe.id]?.calories,
+                                    carbs: detailService.nutritionByRecipeId[recipe.id]?.carbohydrateContent,
+                                    fat: detailService.nutritionByRecipeId[recipe.id]?.fatContent,
+                                    protein: detailService.nutritionByRecipeId[recipe.id]?.proteinContent
+                                )
+                            }
+                        }
+                        .padding()
                     }
                 }
             }
@@ -76,110 +91,18 @@ struct RecipeListView: View {
         }
     }
 
+    private func recipeImageURL(_ recipe: Recipe) -> URL? {
+        let raw = recipe.descriptiveAssets?.first?.square ?? recipe.image
+        guard let raw else { return nil }
+        let resolved = raw.replacingOccurrences(of: "{transformation}", with: "t_web750x500")
+        return URL(string: resolved)
+    }
+
     private func performSearch() {
         let searchQuery = query.isEmpty ? "" : query
         Task {
             await searchService.search(query: searchQuery)
         }
-    }
-}
-
-struct RecipeRow: View {
-    let recipe: Recipe
-    let nutrition: NutritionInfo?
-
-    var body: some View {
-        HStack(spacing: 12) {
-            AsyncImage(url: imageURL) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Rectangle()
-                    .foregroundStyle(.quaternary)
-                    .overlay {
-                        Image(systemName: "fork.knife")
-                            .foregroundStyle(.secondary)
-                    }
-            }
-            .frame(width: 60, height: 60)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(recipe.title)
-                    .font(.headline)
-                    .lineLimit(2)
-
-                HStack(spacing: 12) {
-                    if let rating = recipe.rating, rating > 0 {
-                        Label(String(format: "%.1f", rating), systemImage: "star.fill")
-                            .font(.caption)
-                            .foregroundStyle(.orange)
-                    }
-
-                    if let totalTime = recipe.totalTime, totalTime > 0 {
-                        Label(formatTime(totalTime), systemImage: "clock")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if let count = recipe.numberOfRatings, count > 0 {
-                        Text("\(count) ratings")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                if let nutrition {
-                    HStack(spacing: 8) {
-                        if let cal = nutrition.calories {
-                            NutritionBadge(label: "Cal", value: cal)
-                        }
-                        if let carbs = nutrition.carbohydrateContent {
-                            NutritionBadge(label: "Carbs", value: carbs)
-                        }
-                        if let fat = nutrition.fatContent {
-                            NutritionBadge(label: "Fat", value: fat)
-                        }
-                        if let protein = nutrition.proteinContent {
-                            NutritionBadge(label: "Protein", value: protein)
-                        }
-                    }
-                }
-            }
-        }
-        .padding(.vertical, 4)
-    }
-
-    private var imageURL: URL? {
-        let raw = recipe.descriptiveAssets?.first?.square ?? recipe.image
-        guard let raw else { return nil }
-        let resolved = raw.replacingOccurrences(of: "{transformation}", with: "t_mob80x80%402x")
-        return URL(string: resolved)
-    }
-
-    private func formatTime(_ seconds: Int) -> String {
-        let minutes = seconds / 60
-        if minutes >= 60 {
-            let hours = minutes / 60
-            let remaining = minutes % 60
-            return remaining > 0 ? "\(hours)h \(remaining)min" : "\(hours)h"
-        }
-        return "\(minutes) min"
-    }
-}
-
-struct NutritionBadge: View {
-    let label: String
-    let value: String
-
-    var body: some View {
-        Text("\(label): \(value)")
-            .font(.caption2)
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
-            .background(.quaternary, in: RoundedRectangle(cornerRadius: 4))
     }
 }
 
