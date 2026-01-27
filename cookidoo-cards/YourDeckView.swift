@@ -68,6 +68,8 @@ struct YourDeckView: View {
                         .shadow(radius: 4, y: 2)
                 }
                 .padding(24)
+                .opacity(savedRecipes.count < 2 ? 0.4 : 1.0)
+                .disabled(savedRecipes.count < 2)
             }
             .sheet(isPresented: $showingSearch) {
                 RecipeListView()

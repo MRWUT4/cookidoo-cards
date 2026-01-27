@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+private struct StatTapActionKey: EnvironmentKey {
+    static let defaultValue: ((String) -> Void)? = nil
+}
+
+extension EnvironmentValues {
+    var onStatTapped: ((String) -> Void)? {
+        get { self[StatTapActionKey.self] }
+        set { self[StatTapActionKey.self] = newValue }
+    }
+}
+
 struct RecipeCardView: View {
     let title: String
     let imageURL: URL?
@@ -17,6 +28,10 @@ struct RecipeCardView: View {
     let carbs: String?
     let fat: String?
     let protein: String?
+
+    var highlightedStat: String? = nil
+
+    @Environment(\.onStatTapped) private var onStatTapped
 
     var body: some View {
         VStack(spacing: 0) {
@@ -49,25 +64,25 @@ struct RecipeCardView: View {
             // Stats
             VStack(spacing: 0) {
                 if let rating {
-                    StatRow(label: "Rating", value: String(format: "%.1f", rating))
+                    statRow(label: "Rating", value: String(format: "%.1f", rating), key: "rating")
                 }
                 if let numberOfRatings {
-                    StatRow(label: "Reviews", value: "\(numberOfRatings)")
+                    statRow(label: "Reviews", value: "\(numberOfRatings)", key: "reviews")
                 }
                 if let totalTime {
-                    StatRow(label: "Time", value: formatTime(totalTime))
+                    statRow(label: "Time", value: formatTime(totalTime), key: "time")
                 }
                 if let calories {
-                    StatRow(label: "Calories", value: calories)
+                    statRow(label: "Calories", value: calories, key: "calories")
                 }
                 if let carbs {
-                    StatRow(label: "Carbs", value: carbs)
+                    statRow(label: "Carbs", value: carbs, key: "carbs")
                 }
                 if let fat {
-                    StatRow(label: "Fat", value: fat)
+                    statRow(label: "Fat", value: fat, key: "fat")
                 }
                 if let protein {
-                    StatRow(label: "Protein", value: protein)
+                    statRow(label: "Protein", value: protein, key: "protein")
                 }
             }
             .padding(.vertical, 4)
@@ -78,6 +93,18 @@ struct RecipeCardView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(.separator, lineWidth: 1)
         )
+    }
+
+    @ViewBuilder
+    private func statRow(label: String, value: String, key: String) -> some View {
+        let row = StatRow(label: label, value: value, isHighlighted: highlightedStat == key)
+
+        if let onStatTapped {
+            Button { onStatTapped(key) } label: { row }
+                .buttonStyle(.plain)
+        } else {
+            row
+        }
     }
 
     private func formatTime(_ seconds: Int) -> String {
@@ -94,6 +121,7 @@ struct RecipeCardView: View {
 private struct StatRow: View {
     let label: String
     let value: String
+    var isHighlighted: Bool = false
 
     var body: some View {
         HStack {
@@ -106,5 +134,6 @@ private struct StatRow: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
+        .background(isHighlighted ? Color.accentColor.opacity(0.15) : Color.clear)
     }
 }
