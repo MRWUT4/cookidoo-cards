@@ -6,11 +6,18 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct RecipeListView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     @State private var searchService = SearchService()
     @State private var detailService = RecipeDetailService()
     @State private var query = ""
+
+    private var canAdd: Bool {
+        !searchService.recipes.isEmpty && !detailService.nutritionByRecipeId.isEmpty
+    }
 
     var body: some View {
         NavigationStack {
@@ -28,6 +35,24 @@ struct RecipeListView: View {
                 }
             }
             .navigationTitle("Cookidoo")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        addRecipes()
+                        dismiss()
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .disabled(!canAdd)
+                }
+            }
             .searchable(text: $query, prompt: "Search recipes")
             .onSubmit(of: .search) {
                 performSearch()
@@ -43,8 +68,16 @@ struct RecipeListView: View {
         }
     }
 
+    private func addRecipes() {
+        for recipe in searchService.recipes {
+            guard let nutrition = detailService.nutritionByRecipeId[recipe.id] else { continue }
+            let saved = SavedRecipe(recipe: recipe, nutrition: nutrition)
+            modelContext.insert(saved)
+        }
+    }
+
     private func performSearch() {
-        let searchQuery = query.isEmpty ? "pizza" : query
+        let searchQuery = query.isEmpty ? "" : query
         Task {
             await searchService.search(query: searchQuery)
         }

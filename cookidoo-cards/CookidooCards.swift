@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct CookidooCards: App {
@@ -16,5 +17,6 @@ struct CookidooCards: App {
             ContentView()
                 .environment(authService)
         }
+        .modelContainer(for: SavedRecipe.self)
     }
 }

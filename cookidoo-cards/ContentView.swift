@@ -9,14 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        TabView {
-            Tab("Recipes", systemImage: "fork.knife") {
-                RecipeListView()
-            }
-            Tab("Account", systemImage: "person.crop.circle") {
-                AuthenticationView()
-            }
-        }
+        YourDeckView()
     }
 }
 
