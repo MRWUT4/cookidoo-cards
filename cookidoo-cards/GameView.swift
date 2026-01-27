@@ -138,22 +138,22 @@ struct GameView: View {
                     resultBanner(result: result, stat: stat)
                 }
 
-                HStack(alignment: .top, spacing: 12) {
-                    if let card = playerDeck.first {
-                        VStack(spacing: 4) {
-                            Text("You")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            playerCard(card, interactive: false)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
+                VStack(alignment: .leading, spacing: 12) {
                     if let card = computerDeck.first {
                         VStack(spacing: 4) {
                             Text("Computer")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                             cardView(for: card)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    if let card = playerDeck.first {
+                        VStack(spacing: 4) {
+                            Text("You")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            playerCard(card, interactive: false)
                         }
                         .frame(maxWidth: .infinity)
                     }

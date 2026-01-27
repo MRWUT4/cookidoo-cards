@@ -34,16 +34,7 @@ struct RecipeCardView: View {
     @Environment(\.onStatTapped) private var onStatTapped
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Title
-            Text(title)
-                .font(.headline)
-                .lineLimit(2)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 10)
-
+        HStack(spacing: 0) {
             // Image
             AsyncImage(url: imageURL) { image in
                 image
@@ -58,35 +49,47 @@ struct RecipeCardView: View {
                             .foregroundStyle(.secondary)
                     }
             }
-            .frame(height: 180)
+            .frame(maxHeight: .infinity)
+            .frame(width: 140)
             .clipped()
 
-            // Stats
-            VStack(spacing: 0) {
-                if let rating {
-                    statRow(label: "Rating", value: String(format: "%.1f", rating), key: "rating")
+            // Title + Stats
+            VStack(alignment: .leading, spacing: 0) {
+                Text(title)
+                    .font(.headline)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+
+                VStack(spacing: 0) {
+                    if let rating {
+                        statRow(label: "Rating", value: String(format: "%.1f", rating), key: "rating")
+                    }
+                    if let numberOfRatings {
+                        statRow(label: "Reviews", value: "\(numberOfRatings)", key: "reviews")
+                    }
+                    if let totalTime {
+                        statRow(label: "Time", value: formatTime(totalTime), key: "time")
+                    }
+                    if let calories {
+                        statRow(label: "Calories", value: calories, key: "calories")
+                    }
+                    if let carbs {
+                        statRow(label: "Carbs", value: carbs, key: "carbs")
+                    }
+                    if let fat {
+                        statRow(label: "Fat", value: fat, key: "fat")
+                    }
+                    if let protein {
+                        statRow(label: "Protein", value: protein, key: "protein")
+                    }
                 }
-                if let numberOfRatings {
-                    statRow(label: "Reviews", value: "\(numberOfRatings)", key: "reviews")
-                }
-                if let totalTime {
-                    statRow(label: "Time", value: formatTime(totalTime), key: "time")
-                }
-                if let calories {
-                    statRow(label: "Calories", value: calories, key: "calories")
-                }
-                if let carbs {
-                    statRow(label: "Carbs", value: carbs, key: "carbs")
-                }
-                if let fat {
-                    statRow(label: "Fat", value: fat, key: "fat")
-                }
-                if let protein {
-                    statRow(label: "Protein", value: protein, key: "protein")
-                }
+                .padding(.vertical, 4)
             }
-            .padding(.vertical, 4)
         }
+//        .aspectRatio(2, contentMode: .fit)
         .background(.background)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
@@ -116,6 +119,22 @@ struct RecipeCardView: View {
         }
         return "\(minutes) min"
     }
+}
+
+#Preview {
+    RecipeCardView(
+        title: "Spaghetti Bolognese",
+        imageURL: URL(string: "https://assets.tmecosys.com/image/upload/t_mob400x333%402x/img/recipe/ras/Assets/d2db89d7289e3a5794ff8b97dea812bf/Derivates/02983fa7c9a526b58094f08f91935100ea25c3ca"),
+        rating: 4.3,
+        numberOfRatings: 128,
+        totalTime: 2400,
+        calories: "350 kcal",
+        carbs: "45 g",
+        fat: "12 g",
+        protein: "18 g",
+        highlightedStat: "rating"
+    )
+    .padding()
 }
 
 private struct StatRow: View {
