@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		63D1747A2F288D6700B2D7AF /* CookidooCards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CookidooCards.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		63D1747A2F288D6700B2D7AF /* Cookidoo Cards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Cookidoo Cards.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		63D1747C2F288D6700B2D7AF /* CookidooCards */ = {
+		63D1747C2F288D6700B2D7AF /* Shared */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CookidooCards;
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		63D174712F288D6700B2D7AF = {
 			isa = PBXGroup;
 			children = (
-				63D1747C2F288D6700B2D7AF /* CookidooCards */,
+				63D1747C2F288D6700B2D7AF /* Shared */,
 				63D1747B2F288D6700B2D7AF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		63D1747B2F288D6700B2D7AF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				63D1747A2F288D6700B2D7AF /* CookidooCards.app */,
+				63D1747A2F288D6700B2D7AF /* Cookidoo Cards.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		63D174792F288D6700B2D7AF /* CookidooCards */ = {
+		63D174792F288D6700B2D7AF /* Cookidoo Cards */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 63D174852F288D6A00B2D7AF /* Build configuration list for PBXNativeTarget "CookidooCards" */;
+			buildConfigurationList = 63D174852F288D6A00B2D7AF /* Build configuration list for PBXNativeTarget "Cookidoo Cards" */;
 			buildPhases = (
 				63D174762F288D6700B2D7AF /* Sources */,
 				63D174772F288D6700B2D7AF /* Frameworks */,
@@ -61,13 +61,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				63D1747C2F288D6700B2D7AF /* CookidooCards */,
+				63D1747C2F288D6700B2D7AF /* Shared */,
 			);
-			name = CookidooCards;
+			name = "Cookidoo Cards";
 			packageProductDependencies = (
 			);
 			productName = "cookidoo-cards";
-			productReference = 63D1747A2F288D6700B2D7AF /* CookidooCards.app */;
+			productReference = 63D1747A2F288D6700B2D7AF /* Cookidoo Cards.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 63D174752F288D6700B2D7AF /* Build configuration list for PBXProject "CookidooCards" */;
+			buildConfigurationList = 63D174752F288D6700B2D7AF /* Build configuration list for PBXProject "Cookidoo Cards" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				63D174792F288D6700B2D7AF /* CookidooCards */,
+				63D174792F288D6700B2D7AF /* Cookidoo Cards */,
 			);
 		};
 /* End PBXProject section */
@@ -334,7 +334,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		63D174752F288D6700B2D7AF /* Build configuration list for PBXProject "CookidooCards" */ = {
+		63D174752F288D6700B2D7AF /* Build configuration list for PBXProject "Cookidoo Cards" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				63D174832F288D6A00B2D7AF /* Debug */,
@@ -343,7 +343,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		63D174852F288D6A00B2D7AF /* Build configuration list for PBXNativeTarget "CookidooCards" */ = {
+		63D174852F288D6A00B2D7AF /* Build configuration list for PBXNativeTarget "Cookidoo Cards" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				63D174862F288D6A00B2D7AF /* Debug */,
