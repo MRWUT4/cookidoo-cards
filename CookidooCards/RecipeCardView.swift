@@ -7,17 +7,6 @@
 
 import SwiftUI
 
-private struct StatTapActionKey: EnvironmentKey {
-    static let defaultValue: ((String) -> Void)? = nil
-}
-
-extension EnvironmentValues {
-    var onStatTapped: ((String) -> Void)? {
-        get { self[StatTapActionKey.self] }
-        set { self[StatTapActionKey.self] = newValue }
-    }
-}
-
 struct RecipeCardView: View {
     let title: String
     let imageURL: URL?
@@ -31,11 +20,36 @@ struct RecipeCardView: View {
 
     var highlightedStat: String? = nil
     var redactStats: Bool = false
+    var scale: CGFloat = 1.0
 
-    @Environment(\.onStatTapped) private var onStatTapped
+    private var statItems: [(label: String, value: String, key: String)] {
+        var items: [(String, String, String)] = []
+        if let rating { items.append(("Rating", String(format: "%.1f", rating), "rating")) }
+        if let numberOfRatings { items.append(("Reviews", "\(numberOfRatings)", "reviews")) }
+        if let totalTime { items.append(("Time", formatTime(totalTime), "time")) }
+        if let calories { items.append(("Calories", calories, "calories")) }
+        if let carbs { items.append(("Carbs", carbs, "carbs")) }
+        if let fat { items.append(("Fat", fat, "fat")) }
+        if let protein { items.append(("Protein", protein, "protein")) }
+        return items
+    }
 
     var body: some View {
-        HStack(spacing: 0) {
+        GeometryReader { geo in
+            let cardWidth = geo.size.width / scale
+            let cardHeight = geo.size.height / scale
+
+            cardContent(cardHeight: cardHeight)
+                .frame(width: cardWidth, height: cardHeight)
+                .drawingGroup()
+                .scaleEffect(scale)
+                .frame(width: geo.size.width, height: geo.size.height)
+        }
+        .aspectRatio(5.0 / 7.0, contentMode: .fit)
+    }
+
+    private func cardContent(cardHeight: CGFloat) -> some View {
+        VStack(spacing: 0) {
             // Image
             AsyncImage(url: imageURL) { image in
                 image
@@ -50,66 +64,36 @@ struct RecipeCardView: View {
                             .foregroundStyle(.secondary)
                     }
             }
-            .frame(maxHeight: .infinity)
-            .frame(width: 140)
+            .frame(height: cardHeight / 2)
             .clipped()
 
-            // Title + Stats
-            VStack(alignment: .leading, spacing: 0) {
-                Text(title)
-                    .font(.headline)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
+            // Title
+            Text(title)
+                .font(.title)
+                .fontWeight(.semibold)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
 
-                VStack(spacing: 0) {
-                    if let rating {
-                        statRow(label: "Rating", value: String(format: "%.1f", rating), key: "rating")
-                    }
-                    if let numberOfRatings {
-                        statRow(label: "Reviews", value: "\(numberOfRatings)", key: "reviews")
-                    }
-                    if let totalTime {
-                        statRow(label: "Time", value: formatTime(totalTime), key: "time")
-                    }
-                    if let calories {
-                        statRow(label: "Calories", value: calories, key: "calories")
-                    }
-                    if let carbs {
-                        statRow(label: "Carbs", value: carbs, key: "carbs")
-                    }
-                    if let fat {
-                        statRow(label: "Fat", value: fat, key: "fat")
-                    }
-                    if let protein {
-                        statRow(label: "Protein", value: protein, key: "protein")
-                    }
+            // Stats
+            LazyVGrid(columns: [GridItem(.flexible())], spacing: 0) {
+                ForEach(statItems, id: \.key) { item in
+                    StatRow(label: item.label, value: item.value, isHighlighted: highlightedStat == item.key)
                 }
-                .padding(.vertical, 4)
-                .redacted(reason: redactStats ? .placeholder : [])
             }
+            .padding(.vertical, 4)
+            .redacted(reason: redactStats ? .placeholder : [])
+
+            Spacer(minLength: 0)
         }
-//        .aspectRatio(2, contentMode: .fit)
         .background(.background)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .stroke(.separator, lineWidth: 1)
         )
-    }
-
-    @ViewBuilder
-    private func statRow(label: String, value: String, key: String) -> some View {
-        let row = StatRow(label: label, value: value, isHighlighted: highlightedStat == key)
-
-        if let onStatTapped {
-            Button { onStatTapped(key) } label: { row }
-                .buttonStyle(.plain)
-        } else {
-            row
-        }
     }
 
     private func formatTime(_ seconds: Int) -> String {
@@ -147,14 +131,12 @@ private struct StatRow: View {
     var body: some View {
         HStack {
             Text(label)
-                .font(.subheadline)
             Spacer()
             Text(value)
-                .font(.subheadline)
                 .fontWeight(.semibold)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 3)
         .background(isHighlighted ? Color.accentColor.opacity(0.15) : Color.clear)
     }
 }
